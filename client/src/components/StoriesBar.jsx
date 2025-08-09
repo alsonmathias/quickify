@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { dummyStoriesData } from "../assets/assets";
 import { Plus } from "lucide-react";
+import moment from "moment";
+import StoryModel from "./StoryModel";
+import StoryViewer from "./StoryViewer";
 
 const StoriesBar = () => {
   const [stories, setStories] = useState([]);
+  const [showModel, setShowModel] = useState(false);
+  const [viewStory, setViewStory] = useState(null);
   const fetchStories = async () => {
     setStories(dummyStoriesData);
   };
@@ -15,6 +20,7 @@ const StoriesBar = () => {
       <div className="flex gap-4 pb-5">
         {/* add a story card */}
         <div
+          onClick={() => setShowModel(true)}
           className="rounded-lg shadow-sm min-w-[120px] max-w-[120px] max-h-[160px] 
           aspect-[3/4] cursor-pointer hover:shadow-lg transition-all duration-200
           border-2 border-dashed border-indigo-300 bg-gradient-to-b from-indigo-50 to-white"
@@ -31,6 +37,7 @@ const StoriesBar = () => {
         {/* story cards */}
         {stories.map((story, index) => (
           <div
+            onClick={() => setViewStory(story)}
             key={index}
             className={`relative rounded-lg shadow
           min-w-30 max-w-30 max-h-40 cursor-pointer hover:shadow-lg
@@ -46,11 +53,37 @@ const StoriesBar = () => {
               {story.content}
             </p>
             <p className="text-white absolute bottom-1 right-2 z-10 text-xs">
-              {story.createdAt}
+              {moment(story.createdAt).fromNow()}
             </p>
+            {story.media_type !== "text" && (
+              <div className="absolute inset-0 z-10 rounded-lg bg-black overflow-hidden">
+                {story.media_type === "image" ? (
+                  <img
+                    src={story.media_url}
+                    alt=""
+                    className="h-full w-full object-cover hover:scale-110
+              transition duration-500 opacity-70 hover:opacity-80"
+                  />
+                ) : (
+                  <video
+                    src={story.media_url}
+                    className="h-full w-full object-cover hover:scale-110
+              transition duration-500 opacity-70 hover:opacity-80"
+                  />
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
+      {/* Add Story Model */}
+      {showModel && (
+        <StoryModel setShowModel={setShowModel} fetchStories={fetchStories} />
+      )}
+      {/* view story model */}
+      {viewStory && (
+        <StoryViewer viewStory={viewStory} setViewStory={setViewStory} />
+      )}
     </div>
   );
 };
