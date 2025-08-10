@@ -5,6 +5,7 @@ import Loading from "../components/Loading";
 import UserProfileInfo from "../components/UserProfileInfo";
 import PostCard from "../components/PostCard";
 import moment from "moment";
+import ProfileModel from "../components/ProfileModel";
 
 const Profile = () => {
   const { profileId } = useParams();
@@ -115,7 +116,7 @@ const Profile = () => {
       </div>
       {/* Edit profile */}
       {showEdit && (
-        <p>Show profile edit</p>
+        <ProfileModel setShowEdit={setShowEdit}/>
       )}
     </div>
   ) : (
