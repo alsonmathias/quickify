@@ -258,11 +258,10 @@ export const acceptConnectionRequest = async (req, res) => {
     toUser.connections.push(userId);
     await toUser.save();
 
-connection.status = 'accepted'
-await connection.save()
+    connection.status = "accepted";
+    await connection.save();
 
-res.json({success: true, message:'Connection accepted successfully'})
-
+    res.json({ success: true, message: "Connection accepted successfully" });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
