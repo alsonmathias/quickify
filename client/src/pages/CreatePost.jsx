@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { dummyUserData } from "../assets/assets";
 import { Image, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 const CreatePost = () => {
   const [content, setContent] = useState("");
@@ -9,7 +10,7 @@ const CreatePost = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {};
-  const user = dummyUserData;
+  const user = useSelector((state)=> state.user.value);
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <div className="max-w-6xl mx-auto p-6">
