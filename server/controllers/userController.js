@@ -200,10 +200,10 @@ export const sendConnectionRequest = async (req, res) => {
         name: "app/connection-request",
         data: { connectionId: newConnection._id },
       });
-      
+
       return res.json({
         success: true,
-        message: "Connection request send successfully",
+        message: "Connection request sent successfully",
       });
     } else if (connection && connection.status === "accepted") {
       return res.json({
@@ -225,12 +225,14 @@ export const sendConnectionRequest = async (req, res) => {
 export const getUserConnections = async (req, res) => {
   try {
     const { userId } = req.auth();
-    const user = await User.findById(userId).populate(
-      "connections followes following"
-    );
-    const connections = user.connections;
-    const followers = user.followers;
-    const following = user.following;
+    const user = await User.findById(userId)
+      .populate("connections")
+      .populate("followers")
+      .populate("following");
+
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
 
     const pendingConnections = (
       await Connection.find({
@@ -239,12 +241,19 @@ export const getUserConnections = async (req, res) => {
       }).populate("from_user_id")
     ).map((connection) => connection.from_user_id);
 
-    res.json({ success: true, connections, followers, following });
+    res.json({
+      success: true,
+      connections: user.connections,
+      followers: user.followers,
+      following: user.following,
+      pendingConnections,
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.json({ success: false, message: error.message });
   }
 };
+
 
 // Accept Connection Request
 export const acceptConnectionRequest = async (req, res) => {
@@ -252,9 +261,10 @@ export const acceptConnectionRequest = async (req, res) => {
     const { userId } = req.auth();
     const { id } = req.body;
     const connection = await Connection.findOne({
-      from_user_id: userId,
+      from_user_id: id,
       to_user_id: userId,
     });
+
     if (!connection) {
       return res.json({ success: false, message: "Connection not found" });
     }
